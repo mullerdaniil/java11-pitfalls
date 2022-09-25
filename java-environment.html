@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Java 11 Pitfalls</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header>
+  <a href="index.html">Java 11 Pitfalls</a>
+</header>
+<main>
+  <nav>
+    <a href="java-environment.html">Среда Java</a>
+    <a href="#">Тема 2</a>
+  </nav>
+
+  <div class="contentContainer">
+
+
+
+    <h1>Среда Java</h1>
+
+    <div class="question">
+      <h5>JDK, JRE, JVM</h5>
+      <p>JDK (Java Development Toolkit) - необходимый минимум для разработки на Java. Включает в себя:
+        компилятор (javac), исполнитель java-программ (java), архиватор (jar), генератор документации (javadoc).
+      </p>
+      <p>
+        <span class="code">javac</span> превращает код (.java) в байткод (.class).
+        <span class="code">java</span> запускает JVM (Java Virtual Machine), которая умеет выполнять байткод (.class файл).
+      </p>
+      <p>
+        JRE (Java Runtime Environment) - кусок JDK, который нужен для запуска программ, но не для компиляции. В Java 11 она больше не живёт отдельно.
+      </p>
+    </div>
+
+    <div class="question">
+      <h5>Преимущества Java</h5>
+      <p>ООП, инкапсуляция, платформо-независимость, надёжность, безопасность, многопоточность, обратная совместимость.</p>
+    </div>
+
+    <div class="question">
+      <h5>Комменты</h5>
+      <p>Бывают однострочные (действуют до конца строки):</p>
+      <p class="snippet">// my comment</p>
+      <p>Можно многострочные:</p>
+      <p class="snippet">
+        /* first */
+        /*
+        second
+        */
+      </p>
+      <p>Так можно:</p>
+      <p class="snippet">
+        /*
+        //
+        //*/
+      </p>
+      <p>Вложенные многострочные нельзя по понятным причинам:</p>
+      <p class="snippet error">      /*
+        // outer
+        /*
+        inner
+        */
+        // а ниже будет ошибка, т.к. камент заканчивается выше
+        */
+      </p>
+      <p>
+        Специальные многострочные коменты для javadoc'а (начинаются с <span class="code">/**</span>):
+      </p>
+      <p class="snippet">      /**
+        * comment123
+        * by me
+        */
+      </p>
+    </div>
+
+    <div class="question">
+      <h5>Файл и классы</h5>
+      <p>Во-первых, в файле должен быть минимум 1 класс.</p>
+      <p>Не public классов может быть любое количество.</p>
+      <p>В файле может быть один public класс, а может и не быть ни одного. При этом не больше одного. Короче, 0 <= кол-во публичных классов <= 1 в файле.</p>
+      <p>Если public класс всё-таки есть, то имя класса ClassName должно совпадать с именем файла ClassName.java.</p>
+    </div>
+
+    <div class="question">
+      <h5>Метод main</h5>
+      <p>main - точка входа программы. С него JVM начинает свою работу.</p>
+      <p>Принято писать так:</p>
+      <p class="snippet"> public static void main(String[] args) {}</p>
+      <p>Хотя никто не запрещает писать в параметры такое:</p>
+      <p class="snippet"> String abcd []</p>
+      <p class="snippet"> String... params</p>
+      <p>Передача аргументов происходит так:</p>
+      <p class="snippet">java Program first "sec ond" third   four th fifth 6</p>
+      <p>Соответственно, String[] args будет состоять из "first", "sec ond", "third", four", "th", "fifth", "6".</p>
+    </div>
+
+    <div class="question">
+      <h5>One-line запуск программы</h5>
+      <p>Фича появилась в 11 версии. Можно запускать код без компиляции (т.е. без <span class="code">javac</span>). Но! так можно только с программами, состоящими из одного файла и без стороннего кода. Если больше одного - только <span class="code">javac</span>.</p>
+      <p>Обычный способ:</p>
+      <p class="snippet">javac Some.java
+        java Some</p>
+      <p>One-line:</p>
+      <p class="snippet">java Some.java</p>
+      <p>При втором способе файл Some.class не создаётся.</p>
+    </div>
+
+    <div class="question">
+      <h5>import</h5>
+      <p>Всё, что находится в <span class="code">java.lang</span> не обязательно явно импортировать. Так же как и классы, находящиеся в текущем package.</p>
+      <p>Если есть два одноимённых класса из разных пакетов, то нельзя импортировать их одновременно:</p>
+      <p class="snippet error">    import myPackage.ClassA;
+        import myPackage2.ClassA;</p>
+      <p>Так тоже нельзя (но если класс не используется в коде, то можно):</p>
+      <p class="snippet error">    import myPackage.*;
+        import myPackage2.*;</p>
+      <p>А так можно:</p>
+      <p class="snippet">    import myPackage.*;
+        import myPackage2.ClassA;</p>
+      <p>И возьмётся класс именно из пакета myPackage2, который объявлен явно, и звёздочка проиграет.</p>
+      <p>Если нужны оба класса, то просто писать имена полностью, а можно полностью только один.</p>
+    </div>
+
+    <div class="question">
+      <h5>Порядок package-import-class</h5>
+      <p>Именно в таком порядке нужно расставлять соответствующие куски в файле. При этом, package и import опциональны.</p>
+    </div>
+
+    <div class="question">
+      <h5>Параметры команд</h5>
+      <p><span class="code">java classpath</span>. Указывает, где искать файлы. Все 3 варианта равносильны:</p>
+      <p class="snippet">java -cp folder ClassX
+        java -classpath folder ClassX
+        java --class-path folder ClassX
+      </p>
+      <p><span class="code">javac -d folder pack1.ClassA pack2.ClassB</span> говорит, куда положить .class файлы. По умолчанию, файлы кладутся в текущую папку.</p>
+      <p>Основные options для <span class="code">jar</span>:</p>
+      <table>
+        <tr>
+          <th>Опция</th>
+          <th>Что делает</th>
+        </tr>
+        <tr>
+          <td><span class="code">-c</span> или <span class="code">--create</span></td>
+          <td>создаёт jar файл</td>
+        </tr>
+        <tr>
+          <td><span class="code">-v</span> или <span class="code">--verbose</span></td>
+          <td>печатает debug вывод</td>
+        </tr>
+        <tr>
+          <td><span class="code">-f fileName</span> или <span class="code">--file fileName</span></td>
+          <td>имя jar файла</td>
+        </tr>
+        <tr>
+          <td><span class="code">-C directory</span></td>
+          <td>папка, содержащая файлы, из которых будет создан jar</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</main>
+<footer>
+  2022-2022 &copy; by mullerdaniil
+</footer>
+</body>
+</html>
